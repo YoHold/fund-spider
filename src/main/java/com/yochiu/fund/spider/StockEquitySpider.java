@@ -43,10 +43,8 @@ public class StockEquitySpider {
      * @return
      */
     public static Pair<String, Double> getStockEquity(String symbol) {
-        String market = SymbolUtil.getMarketLabelBySymbol(symbol);
-        String code = market + symbol;
         Map<String, String> params = Maps.newHashMap();
-        params.put("code", code);
+        params.put("code", SymbolUtil.getStockId(symbol));
         String content = HttpUtil.get(STOCK_EQUITY, 3000, 3000, "UTF-8", params);
         JSONObject dataJson = JSONObject.parseObject(content);
 

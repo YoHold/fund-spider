@@ -45,10 +45,8 @@ public class StockFinanceSpider {
      * @return
      */
     public static TreeMap<String, String> getIncreaseProfit(String symbol) {
-        String market = SymbolUtil.getMarketLabelBySymbol(symbol);
-        String code = market + symbol;
         Map<String, String> params = Maps.newHashMap();
-        params.put("code", code);
+        params.put("code", SymbolUtil.getStockId(symbol));
 
         TreeMap<String, String> profitMap = new TreeMap<>(Comparator.reverseOrder());
         String content = HttpUtil.get(STOCK_FINANCE, 3000, 3000, "UTF-8", params);

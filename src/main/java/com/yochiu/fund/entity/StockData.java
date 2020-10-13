@@ -70,6 +70,11 @@ public class StockData {
     @ExcelColumn(header = "近六月盈利预期(收益)Y3", order = 18)
     private String profitForecastY3;
 
+    @ExcelColumn(header = "所属板块", order = 19)
+    private String boardDesc;
+
+    @ExcelColumn(header = "业务介绍", order = 20)
+    private String businessDesc;
 
 }
 

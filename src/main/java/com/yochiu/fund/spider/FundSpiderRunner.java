@@ -3,6 +3,7 @@ package com.yochiu.fund.spider;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yochiu.fund.config.FundConfig;
+import com.yochiu.fund.entity.StockBoard;
 import com.yochiu.fund.entity.StockData;
 import com.yochiu.fund.entity.StockShare;
 import com.yochiu.fund.until.BigDecimalUtil;
@@ -31,12 +32,16 @@ public class FundSpiderRunner implements CommandLineRunner {
     @Autowired
     private FundConfig fundConfig;
 
+    private Map<String, Integer> hotBoardMap;
+
+    public FundSpiderRunner() {
+        this.hotBoardMap = Maps.newHashMap();
+    }
 
     @Override
     public void run(String... args) {
 
         List<String> fundCodes = fundConfig.getCodes();
-
         Pair<Map<String, StockShare>, Map<String, StockShare>> stockSharePair = FundPositionSpider.getStockPosition(fundCodes);
         Map<String, StockData> increaseStockShareMap = getIncreaseStockShare(stockSharePair.getLeft(), stockSharePair.getRight());
 
@@ -58,19 +63,30 @@ public class FundSpiderRunner implements CommandLineRunner {
             }
 
             Pair<String, Double> stockEquityData = StockEquitySpider.getStockEquity(symbol);
-            stockData.setShareCapital(stockEquityData.getRight());
+            if (stockEquityData != null && stockEquityData.getRight() != null) {
+                stockData.setShareCapital(stockEquityData.getRight());
+                stockData.setPercent(BigDecimalUtil.divide(stockData.getCurShare(), stockData.getShareCapital()));
+            }
 
             Pair<Double, Double> dayBarPair = StockDayBarSpider.getDayBar(symbol);
             if (dayBarPair != null) {
                 stockData.setEndPrice(dayBarPair.getLeft());
                 stockData.setFirstPrice(dayBarPair.getRight());
                 if (dayBarPair.getRight() > 0) {
-                    stockData.setQuoteChange(BigDecimalUtil.divide(dayBarPair.getLeft(), dayBarPair.getRight()));
+                    stockData.setQuoteChange(BigDecimalUtil.divide(dayBarPair.getLeft()-dayBarPair.getRight(), dayBarPair.getRight()));
                 }
+            }
+
+            StockBoard stockBoard = StockBoardSpider.getStockBoard(symbol);
+            if (stockBoard != null) {
+                stockData.setBoardDesc(stockBoard.getBoardDesc());
+                stockData.setBusinessDesc(stockBoard.getBusinessDesc());
+                summaryBoard(stockBoard.getBoardDesc());
             }
         });
 
         saveStockData(Lists.newArrayList(increaseStockShareMap.values()));
+        collectHotBoard();
     }
 
     private void saveStockData(List<StockData> stockDataList) {
@@ -82,7 +98,7 @@ public class FundSpiderRunner implements CommandLineRunner {
             FileOutputStream outputStream = new FileOutputStream(file);
             ExcelUtil.write(outputStream, stockDataList);
         } catch (Exception e) {
-            log.error("save stock data error", e);
+            log.error("FundSpiderRunner save fund data error", e);
         }
     }
 
@@ -95,13 +111,11 @@ public class FundSpiderRunner implements CommandLineRunner {
             if (increaseShare > 0) {
                 try {
                     Double preShare = lastQuarterStockShares.containsKey(symbol) ? lastQuarterStockShares.get(symbol).getShare() : 0D;
-                    Double percent = preShare == 0 ? 1 : BigDecimalUtil.divide(increaseShare, preShare);
                     StockData stockData = StockData.builder()
                             .symbol(latestStockShare.getSymbol())
                             .symbolCode(latestStockShare.getSymbolCode())
                             .curShare(latestStockShare.getShare())
                             .addShare(new BigDecimal(increaseShare).setScale(5, BigDecimal.ROUND_HALF_UP).doubleValue())
-                            .percent(percent)
                             .preShare(preShare).build();
                     increaseStockShareMap.put(stockData.getSymbolCode(), stockData);
                 } catch (Exception e) {
@@ -114,5 +128,23 @@ public class FundSpiderRunner implements CommandLineRunner {
         return increaseStockShareMap;
     }
 
+    private void summaryBoard(String boardDesc) {
+        String[] boardArray = boardDesc.split(" ");
+        for (String board: boardArray) {
+            hotBoardMap.put(board, hotBoardMap.getOrDefault(board, 0) + 1);
+        }
+    }
+
+    private void collectHotBoard() {
+        List<Map.Entry<String,Integer>> entryList = new ArrayList<>(hotBoardMap.entrySet());
+        //降序排序
+        entryList.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        StringBuilder hotBoardDesc = new StringBuilder();
+        for (int i = 0; i < Math.min(15, entryList.size()); i++) {
+            Map.Entry<String, Integer> entry = entryList.get(i);
+            hotBoardDesc.append(entry.getKey() + ":" + entry.getValue()).append("\n");
+        }
+        log.info("collectHotBoard result : {}", hotBoardDesc.toString());
+    }
 
 }

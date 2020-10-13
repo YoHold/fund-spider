@@ -68,28 +68,30 @@ public class StockProfitForecastSpider {
      * @return
      */
     public static TreeMap<String, String> getProfitForecast(String symbol) {
-        String market = SymbolUtil.getMarketLabelBySymbol(symbol);
-        String code = market + symbol;
         Map<String, String> params = Maps.newHashMap();
-        params.put("code", code);
+        params.put("code", SymbolUtil.getStockId(symbol));
         String content = HttpUtil.get(PROFIT_FORECAST_URL, 3000, 3000, "UTF-8", params);
 
         TreeMap<String, String> profitForecastMap = new TreeMap<>(Comparator.reverseOrder());
-        JSONObject dataJson = JSONObject.parseObject(content);
-        JSONArray dateArrayMsg = dataJson.getJSONArray("mgsy");
-        JSONObject profitDataJson = dataJson.getJSONObject("jgyc");
-        if (profitDataJson.containsKey("data")) {
-            JSONArray profitDataArray = profitDataJson.getJSONArray("data");
-            if (profitDataArray.size() > 0) {
-                JSONObject dataItem = profitDataArray.getJSONObject(0);
-                for (int i = 0; i < dateArrayMsg.size(); i++) {
-                    JSONObject dateMsgJson = dateArrayMsg.getJSONObject(i);
-                    if (dateMsgJson.containsKey("year")) {
-                        String key = i == 0 ? "sy" : "sy" + i;
-                        profitForecastMap.put(dateMsgJson.getString("year"), dataItem.getString(key));
+        try {
+            JSONObject dataJson = JSONObject.parseObject(content);
+            JSONArray dateArrayMsg = dataJson.getJSONArray("mgsy");
+            JSONObject profitDataJson = dataJson.getJSONObject("jgyc");
+            if (profitDataJson.containsKey("data")) {
+                JSONArray profitDataArray = profitDataJson.getJSONArray("data");
+                if (profitDataArray.size() > 0) {
+                    JSONObject dataItem = profitDataArray.getJSONObject(0);
+                    for (int i = 0; i < dateArrayMsg.size(); i++) {
+                        JSONObject dateMsgJson = dateArrayMsg.getJSONObject(i);
+                        if (dateMsgJson.containsKey("year")) {
+                            String key = i == 0 ? "sy" : "sy" + i;
+                            profitForecastMap.put(dateMsgJson.getString("year"), dataItem.getString(key));
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            log.info("StockProfitForecastSpider getProfitForecast error, symbol: {}, content: {}", symbol, content);
         }
 
         return profitForecastMap;

@@ -16,5 +16,4 @@ public class BigDecimalUtil {
     public static double add(double a, double b) {
         return new BigDecimal(a).add(new BigDecimal(b)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
-
 }
