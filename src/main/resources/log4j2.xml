@@ -79,45 +79,6 @@
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
 
-        <RollingRandomAccessFile name="BALANCE" fileName="logs/balance.log"
-                                 filePattern="logs/balance_%d{yyyy-MM-dd}_%i.log">
-            <Filters>
-                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
-            </Filters>
-            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss}, %msg%xEx%n"/>
-            <Policies>
-                <TimeBasedTriggeringPolicy interval="1"/>
-                <SizeBasedTriggeringPolicy size="10MB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="20"/>
-        </RollingRandomAccessFile>
-
-        <RollingRandomAccessFile name="DELAY" fileName="logs/delay.log"
-                                 filePattern="logs/delay_%d{yyyy-MM-dd}_%i.log">
-            <Filters>
-                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
-            </Filters>
-            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss}, %msg%xEx%n"/>
-            <Policies>
-                <TimeBasedTriggeringPolicy interval="1"/>
-                <SizeBasedTriggeringPolicy size="10MB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="20"/>
-        </RollingRandomAccessFile>
-
-        <RollingRandomAccessFile name="API" fileName="logs/api.log"
-                                 filePattern="logs/api_%d{yyyy-MM-dd}_%i.log.gz">
-            <Filters>
-                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
-            </Filters>
-            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss}, %msg%xEx%n"/>
-            <Policies>
-                <TimeBasedTriggeringPolicy interval="1"/>
-                <SizeBasedTriggeringPolicy size="500MB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="20"/>
-        </RollingRandomAccessFile>
-
     </Appenders>
 
     <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
@@ -127,24 +88,7 @@
         <!--<Appender-Ref ref="Console"/>-->
         <!--</Logger>-->
         <logger name="org.springframework" level="INFO"></logger>
-        <logger name="io.netty" level="INFO"></logger>
-        <logger name="org.hibernate" level="INFO"></logger>
-        <logger name="org.mybatis.spring" level="INFO"></logger>
-        <logger name="org.apache.zookeeper" level="WARN"/>
-        <logger name="org.apache.curator" level="WARN"/>
-        <logger name="org.apache.kafka" level="INFO"/>
-        <logger name="org.springframework.kafka" level="INFO"/>
-        <logger name="org.quartz" level="INFO" />
         <logger name="org.apache.http" level="INFO" />
-        <logger name="BALANCE" level="INFO" additivity="false">
-            <Appender-Ref ref="BALANCE"/>
-        </logger>
-        <logger name="DELAY" level="INFO" additivity="false">
-            <Appender-Ref ref="DELAY"/>
-        </logger>
-        <logger name="API" level="INFO" additivity="false">
-            <appender-ref ref="API"></appender-ref>
-        </logger>
         <Root level="all">
             <!-- 这儿为trace表示什么都可以打印出来了,其他几个级别分别为：TRACE、DEBUG、INFO、WARN、ERROR和FATAL -->
             <!--<Appender-Ref ref="ALL"/>-->

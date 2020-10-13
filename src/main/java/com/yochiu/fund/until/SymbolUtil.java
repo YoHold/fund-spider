@@ -6,23 +6,14 @@ package com.yochiu.fund.until;
 
 import com.yochiu.fund.common.CommonConsts;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  *
- * @author cheneg
+ * @author yochiu
  *
  */
 public class SymbolUtil {
 
     public static final String MARKET_POSTFIX_SH = ".SH";
-
-    public static final String[] CN_INDICE_ALIAS = new String[]{"000001.SH", "399001", "399006"};
-    public static final String[] CN_INDICE_NAMES = new String[]{"上证指数", "深证成指", "创业板指"};
-    public static final List<String> CN_INDICE_ALIAS_LIST = Arrays.asList(CN_INDICE_ALIAS);
 
     public static String getMarketLabelBySymbol(String symbol) {
         if (symbol != null && symbol.matches("[0-9]+")) {
@@ -55,29 +46,6 @@ public class SymbolUtil {
             return true;
         }
         return false;
-    }
-
-    public static boolean isCnImportantIndice(String symbol) {
-        return CN_INDICE_ALIAS_LIST.contains(symbol);
-    }
-
-
-    /**
-     * 获取市场重要指数的代号和名称的映射
-     * @param market
-     * @return
-     */
-    public static Map<String, String> getIndicesName(String market) {
-        switch (market) {
-            case CommonConsts.MARKET_CN:
-                Map<String, String> cnNameMap = new HashMap<>();
-                for (int i = 0; i < CN_INDICE_ALIAS.length; ++i) {
-                    cnNameMap.put(CN_INDICE_ALIAS[i], CN_INDICE_NAMES[i]);
-                }
-                return cnNameMap;
-            default:
-                return null;
-        }
     }
 
 

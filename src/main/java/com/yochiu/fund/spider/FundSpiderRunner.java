@@ -144,7 +144,7 @@ public class FundSpiderRunner implements CommandLineRunner {
             Map.Entry<String, Integer> entry = entryList.get(i);
             hotBoardDesc.append(entry.getKey() + ":" + entry.getValue()).append("\n");
         }
-        log.info("collectHotBoard result : {}", hotBoardDesc.toString());
+        log.info("collectHotBoard result :\n{}", hotBoardDesc.toString());
     }
 
 }

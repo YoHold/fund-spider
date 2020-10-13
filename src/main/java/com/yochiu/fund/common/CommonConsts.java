@@ -2,18 +2,18 @@ package com.yochiu.fund.common;
 
 
 /**
- *
- *
- * @author cheneg
- *
+ * @author yochiu
  */
 public interface CommonConsts {
 
-    String MARKET_CN = "CN";        //沪深
+    //沪深
+    String MARKET_CN = "CN";
 
-    String MARKET_SH = "SH";        //沪市
+    //沪市
+    String MARKET_SH = "SH";
 
-    String MARKET_SZ = "SZ";        //深市
+    //深市
+    String MARKET_SZ = "SZ";
 
     String CODE = "code";
 
