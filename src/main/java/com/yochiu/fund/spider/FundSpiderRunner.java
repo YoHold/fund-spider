@@ -95,6 +95,7 @@ public class FundSpiderRunner implements CommandLineRunner {
         if (CollectionUtils.isEmpty(stockDataList)) {
             return;
         }
+        stockDataList.sort(Comparator.comparing(StockData::getAddShare).reversed());
         File file = new File(fundConfig.getFilePath());
         try {
             FileOutputStream outputStream = new FileOutputStream(file);
