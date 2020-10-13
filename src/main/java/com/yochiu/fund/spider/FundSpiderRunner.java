@@ -45,7 +45,9 @@ public class FundSpiderRunner implements CommandLineRunner {
         Pair<Map<String, StockShare>, Map<String, StockShare>> stockSharePair = FundPositionSpider.getStockPosition(fundCodes);
         Map<String, StockData> increaseStockShareMap = getIncreaseStockShare(stockSharePair.getLeft(), stockSharePair.getRight());
 
-        increaseStockShareMap.forEach((symbol, stockData) -> {
+        increaseStockShareMap.entrySet().parallelStream().forEach(entry -> {
+            String symbol = entry.getKey();
+            StockData stockData = entry.getValue();
             String[] profitForecastData = StockProfitForecastSpider.getProfitForecast(symbol).values().toArray(new String[]{});
             if (profitForecastData.length >= 4) {
                 stockData.setProfitForecastY0(profitForecastData[0]);

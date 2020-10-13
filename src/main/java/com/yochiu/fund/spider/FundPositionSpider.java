@@ -30,12 +30,12 @@ public class FundPositionSpider {
 
 
     public static Pair<Map<String, StockShare>, Map<String, StockShare>> getStockPosition(List<String> fundCodes) {
-        Map<String, String> params = Maps.newHashMap();
 
         Map<String, StockShare> firstStockShares = Maps.newHashMap();
         Map<String, StockShare> nextStockShares = Maps.newHashMap();
 
-        fundCodes.forEach(code -> {
+        fundCodes.parallelStream().forEach(code -> {
+            Map<String, String> params = Maps.newHashMap();
             params.put(CODE, code);
             String content = HttpUtil.get(POSITION_FUND, 6000, 6000, "UTF-8", params);
             String resContent = trimContent(content);
