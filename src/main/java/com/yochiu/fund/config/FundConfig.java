@@ -20,6 +20,6 @@ public class FundConfig {
 
     private List<String> codes;
 
-    private String filePath;
+    private String fileName;
 
 }

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
@@ -34,9 +35,20 @@ public class FundSpiderRunner implements CommandLineRunner {
 
     private Map<String, Integer> hotBoardMap;
 
+    private String workDir;
+
+    private String filePath;
+
     public FundSpiderRunner() {
         this.hotBoardMap = Maps.newHashMap();
+        this.workDir = System.getProperty("user.dir");
     }
+
+    @PostConstruct
+    public void init(){
+        this.filePath = this.workDir + "/" + fundConfig.getFileName();
+    }
+
 
     @Override
     public void run(String... args) {
@@ -96,7 +108,7 @@ public class FundSpiderRunner implements CommandLineRunner {
             return;
         }
         stockDataList.sort(Comparator.comparing(StockData::getAddShare).reversed());
-        File file = new File(fundConfig.getFilePath());
+        File file = new File(this.filePath);
         try {
             FileOutputStream outputStream = new FileOutputStream(file);
             ExcelUtil.write(outputStream, stockDataList);
