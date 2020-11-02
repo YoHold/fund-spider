@@ -8,6 +8,7 @@ import com.yochiu.fund.entity.StockData;
 import com.yochiu.fund.entity.StockShare;
 import com.yochiu.fund.until.BigDecimalUtil;
 import com.yochiu.fund.until.ExcelUtil;
+import com.yochiu.fund.until.SymbolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -120,7 +121,12 @@ public class FundSpiderRunner implements CommandLineRunner {
 
     private Map<String, StockData> getIncreaseStockShare(Map<String, StockShare> latestQuarterStockShare, Map<String, StockShare> lastQuarterStockShares) {
         Map<String, StockData> increaseStockShareMap = Maps.newHashMap();
-        latestQuarterStockShare.forEach((symbol, latestStockShare) -> {
+        for (Map.Entry<String, StockShare> entry : latestQuarterStockShare.entrySet()) {
+            String symbol = entry.getKey();
+            StockShare latestStockShare = entry.getValue();
+            if (SymbolUtil.isKcbSymbol(symbol) || SymbolUtil.isGemSymbol(symbol)) {
+                continue;
+            }
             double increaseShare = lastQuarterStockShares.containsKey(symbol) ?
                     latestStockShare.getShare() - lastQuarterStockShares.get(symbol).getShare() : latestStockShare.getShare();
             if (increaseShare > 0) {
@@ -138,7 +144,7 @@ public class FundSpiderRunner implements CommandLineRunner {
                 }
 
             }
-        });
+        }
 
         return increaseStockShareMap;
     }

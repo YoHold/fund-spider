@@ -96,4 +96,23 @@ public class SymbolUtil {
         return market + symbol;
     }
 
+    /**
+     * 判断symbol是否为科创板股票代码
+     *
+     * @param symbol
+     * @return
+     */
+    public static boolean isKcbSymbol(String symbol) {
+        return symbol != null && symbol.startsWith("688") && isCnMarket(symbol);
+    }
+
+    /**
+     * 判断symbol是否为创业版股票代码
+     * @param symbol
+     * @return
+     */
+    public static boolean isGemSymbol(String symbol) {
+        return symbol != null && symbol.startsWith("30") && isCnMarket(symbol);
+    }
+
 }
